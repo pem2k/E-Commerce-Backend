@@ -6,7 +6,30 @@ class Tag extends Model {}
 
 Tag.init(
   {
-    // define columns
+    id:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
+    },
+
+    product_id:{
+
+      //foreign key reference here
+    },
+
+    tag_id:{
+      //foreign key reference here
+    },
+
+    tag_name:{
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isAlpha: true,
+      }
+    }
   },
   {
     sequelize,
