@@ -5,23 +5,38 @@ const sequelize = require('../config/connection.js');
 class ProductTag extends Model {}
 
 ProductTag.init({
-  
+  id:{
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true,
+    
+  },
+
     product_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        isNumeric: true
-      }
+      references: {
+        model: "product",
+        key: "id",
+      },
+      onDelete: "cascade",
+      onUpdate: "cascade"
     },
-  
+    
     tag_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        isNumeric: true
-      }
+      references: {
+        model: "tag",
+        key: "id",
+       
+        
+      },
+      onDelete: "cascade",
+      onUpdate: "cascade"
     }
-  },
+  
+    },
+
   {
     sequelize,
     timestamps: false,

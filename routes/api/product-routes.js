@@ -4,14 +4,60 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
+
+  try {
+    const allProducts = await Product.findAll({
+      include: [
+        {model: Category}, 
+        {
+          model: Tag,
+          attributes: ["tag_name"],
+          through: {
+            model: ProductTag
+          }
+        }
+      ]
+    })
+    res.status(200).json(allProducts)
+  } catch (err) {
+    res.status(500).json({
+      msg: "internal server error",
+      err
+    })
+  }
 });
 
 // get one product
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single product by its `id`
+  try {
+    const singleProduct = await Product.findByPk(req.params.id, {
+      include: [
+        {model: Category}, 
+        {
+          model: Tag,
+          attributes: ["tag_name"],
+          through: {
+            model: ProductTag
+          }
+        }
+      ]
+    })
+    if (!singleProduct) {
+      return res.status(404).json({ msg: "Product not found" })
+    }
+
+    res.json(singleProduct)
+
+  } catch (err) {
+    res.status(500).json({
+      msg: "internal server error",
+      err
+    })
+  }
   // be sure to include its associated Category and Tag data
 });
 
@@ -46,7 +92,6 @@ router.post('/', (req, res) => {
       res.status(400).json(err);
     });
 });
-
 // update product
 router.put('/:id', (req, res) => {
   // update product data
@@ -89,8 +134,29 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+
+router.delete('/:id', async (req, res) => {
   // delete one product by its `id` value
+  try{
+  const delItem = await Product.destroy({
+    where:{
+      id: req.params.id
+    }
+  })
+  if (!delItem) {
+    return res.status(404).json({ msg: "Product not found" })
+  }
+
+  res.json(delItem)
+
+} catch (err) {
+  res.status(500).json({
+    msg: "internal server error",
+    err
+  })
+}
+
 });
+
 
 module.exports = router;
